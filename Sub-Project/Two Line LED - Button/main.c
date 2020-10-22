@@ -73,7 +73,8 @@ void LED_Init(void){
 	 GPIOC->MODER &= ~0X0C0000FF; /*Clear Pin Mode*/
 	 GPIOC->MODER |= 0X00000055; /*PC0,PC1 mode change to output*/
 }
-
+unsigned char bUTTON_Detect(void);
+void LED_Line_Change(unsigned char);
 
 int main(void)
 {
@@ -107,35 +108,50 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   LED_Init();
+
+  unsigned char Dec;
+
   while (1)
-  {
-	 if(GPIOC->IDR & 0X2000) /*When Not push the button */
-	 {
-		 GPIOC->BSRR = 0X00000001; /* Upper line LED Turn on */
-		 delayMode(1000);
-		 GPIOC->BSRR = 0X00000002;
-		 delayMode(1000);
-		 GPIOC->BSRR = 0X00000001 << 16;
-		 delayMode(1000);
-		 GPIOC->BSRR = 0X00000002 << 16;
-		 delayMode(1000);
-
+    {
+	  Dec = bUTTON_Detect();
+  	  if(Dec != 0)
+  	  {
+  		  LED_Line_Change(Dec);
   	  }
-	 else{							/*when Push the Button */
-		 GPIOC->BSRR = 0X00000004;  /* down line LED Turn on */
-		 delayMode(1000);
-		 GPIOC->BSRR = 0X00000008;
-		 delayMode(1000);
-		 GPIOC->BSRR = 0X00000004 << 16;
-		 delayMode(1000);
-		 GPIOC->BSRR = 0X00000008 << 16;
-		 delayMode(1000);
-	 }
-
-  }
+  	  else{
+  		  GPIOC->BSRR = 0X00000004;  /* down line LED Turn on */
+  		  delayMode(1000);
+  		  GPIOC->BSRR = 0X00000008;
+  		  delayMode(1000);
+  		  GPIOC->BSRR = 0X00000004 << 16;
+  		  delayMode(1000);
+  		  GPIOC->BSRR = 0X00000008 << 16;
+  		  delayMode(1000);
+  	  }
+    }
+    /* USER CODE END 3 */
   /* USER CODE END 3 */
 }
 
+unsigned char bUTTON_Detect(void){
+	if(GPIOC->IDR & 0X2000) /* Not Detect something */
+		return 0;
+	else					/* Detect Something*/
+		return 3;
+}
+void LED_Line_Change(unsigned char Dec){
+	for(; Dec>0 ; Dec--){
+		GPIOC->BSRR = 0X00000001; /* Upper line LED Turn on */
+		delayMode(1000);
+		GPIOC->BSRR = 0X00000002;
+		delayMode(1000);
+		GPIOC->BSRR = 0X00000001 << 16;
+		delayMode(1000);
+		GPIOC->BSRR = 0X00000002 << 16;
+		delayMode(1000);
+	}
+	delayMode(500);
+}
 /**
   * @brief System Clock Configuration
   * @retval None
