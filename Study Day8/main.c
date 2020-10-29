@@ -100,9 +100,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   __disable_irq();
 
-  RCC->AHBENR |= 0X00020000;
-  GPIOA->MODER &= ~0X00000C00;
-  GPIOA->MODER |=  0X00000400;
+  RCC->AHBENR |= 0X00020000;  /* Port A clock enable */
+  GPIOA->MODER &= ~0X00000C00; /* Clear PA5 pin */
+  GPIOA->MODER |=  0X00000400; /* Set PA5 pin */
 
   UARTInite();
 
@@ -120,26 +120,26 @@ int main(void)
   /* USER CODE END 3 */
 }
 void UARTInite(void){
-	RCC->AHBENR |=  0X00020000;
-	RCC->APB2ENR |= 0X00020000;
+	RCC->AHBENR |=  0X00080000; /* port B enable */
+	RCC->APB1ENR |= 0X00020000; /* USART2 clock Enable */
 
-	GPIOA->MODER &= ~0X000000C0;
-	GPIOA->MODER |=  0X00000080;
-	GPIOA->AFR[0] &= ~0X0000F000;
-	GPIOA->AFR[0] |=  0X00007000;
+	GPIOA->MODER &= ~0X000000C0; /* PA3 clear */
+	GPIOA->MODER |=  0X00000080; /* set AFR */
+	GPIOA->AFR[0] &= ~0XF000; /* Clear AF7(PA3)*/
+	GPIOA->AFR[0] |=  0X7000;/* SET AF7(PA3)*/
 
-	USART2->BRR = 0X0000008B;
-	USART2->CR1 = 0X00000004;
-	USART2->CR2 = 0X00000000;
-	USART2->CR3 = 0X00000000;
+	USART2->BRR =  0X0000008B;
+	USART2->CR1 =  0X00000004;
+	USART2->CR2 =  0X00000000;
+	USART2->CR3 =  0X00000000;
 	USART2->CR1 |= 0X00000001;
 }
 
 void USART2_IRQHandler(void){
 	char c;
 
-	if(USART2->ISR & 0X00000020){
-		c= USART2->RDR;
+	if(USART2->ISR & 0X00000020){ /*When Read data is not empty*/
+		c= USART2->RDR; /* Received the data*/
 		LED_BLINK(c);
 	}
 }
