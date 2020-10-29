@@ -100,7 +100,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   __disable_irq();
 
-  RCC->AHBENR |= 0X00020000;  /* Port A clock enable */
+  
+  RCC->AHBENR |=  0X00020000; /* port A clock enable */
   GPIOA->MODER &= ~0X00000C00; /* Clear PA5 pin */
   GPIOA->MODER |=  0X00000400; /* Set PA5 pin */
 
@@ -120,7 +121,7 @@ int main(void)
   /* USER CODE END 3 */
 }
 void UARTInite(void){
-	RCC->AHBENR |=  0X00080000; /* port B enable */
+	RCC->AHBENR |=  0X00020000;  /* Port A clock enable */
 	RCC->APB1ENR |= 0X00020000; /* USART2 clock Enable */
 
 	GPIOA->MODER &= ~0X000000C0; /* PA3 clear */
